@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <!-- iPhone 13 & Laptop Responsive Viewport + iOS Notch Handling -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#ff758c">
+  <title>A Special Surprise for Rahma Shah ✨</title>
+  <style>
+    /* ==========================================================================
+       1. DESIGN TOKENS & THEMING
+       ========================================================================== */
+    :root {
+      /* Palette: Rose Quartz, Cosmic Lavender, Radiant Gold */
+      --primary-gradient: linear-gradient(135deg, #ff758c 0%, #ff7eb3 35%, #8e54e9 80%, #4776e6 100%);
+      --accent-rose: #ff4370;
+      --accent-coral: #ff758c;
+      --accent-gold: #ffd166;
+      --glow-rose: rgba(255, 67, 112, 0.45);
+      --glow-gold: rgba(255, 209, 102, 0.45);
+
+      /* Glassmorphism System */
+      --glass-surface: rgba(255, 255, 255, 0.20);
+      --glass-surface-hover: rgba(255, 255, 255, 0.26);
+      --glass-border: rgba(255, 255, 255, 0.45);
+      --glass-border-subtle: rgba(255, 255, 255, 0.25);
+      --glass-highlight: rgba(255, 255, 255, 0.7);
+      --glass-shadow: 0 25px 50px rgba(58, 12, 61, 0.35), 0 8px 20px rgba(0, 0, 0, 0.15);
+
+      /* Typography */
+      --text-white: #ffffff;
+      --text-cream: #fff4f8;
+      --text-dim: rgba(255, 240, 246, 0.88);
+      --text-dark: #3c1439;
+
+      /* Font Stacks (Native Cursive & Modern Sans, Zero External Network Requests) */
+      --font-display: -apple-system-ui-serif, 'Snell Roundhand', 'Segoe Script', 'Brush Script MT', 'Dancing Script', cursive, serif;
+      --font-body: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+
+      /* Motion */
+      --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    /* ==========================================================================
+       2. RESET & VIEWPORT (Optimized for iPhone 13 & Laptop)
+       ========================================================================== */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html {
+      width: 100%;
+      height: 100%;
+      height: -webkit-fill-available;
+    }
+
+    body {
+      width: 100%;
+      min-height: 100vh;
+      min-height: 100dvh; /* Dynamic viewport height for iPhone 13 Safari address bar */
+      font-family: var(--font-body);
+      background: var(--primary-gradient);
+      background-size: 300% 300%;
+      animation: ambientShift 22s ease-in-out infinite alternate;
+      color: var(--text-white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow-x: hidden;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      /* iPhone 13 notch and safe areas */
+      padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(20px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+    }
+
+    @keyframes ambientShift {
+      0% { background-position: 0% 20%; }
+      50% { background-position: 100% 80%; }
+      100% { background-position: 20% 100%; }
+    }
+
+    /* Ambient Background Glows */
+    .ambient-glow {
+      position: fixed;
+      width: clamp(280px, 70vw, 550px);
+      height: clamp(280px, 70vw, 550px);
+      border-radius: 50%;
+      pointer-events: none;
+      filter: blur(80px);
+      z-index: 1;
+      opacity: 0.65;
+      animation: floatGlow 14s ease-in-out infinite alternate;
+    }
+
+    .ambient-glow.one {
+      top: -100px;
+      left: -100px;
+      background: radial-gradient(circle, rgba(255, 117, 140, 0.65), transparent 70%);
+    }
+
+    .ambient-glow.two {
+      bottom: -120px;
+      right: -120px;
+      background: radial-gradient(circle, rgba(142, 84, 233, 0.7), transparent 70%);
+      animation-delay: -7s;
+    }
+
+    @keyframes floatGlow {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(40px, 30px) scale(1.12); }
+    }
+
+    /* Hardware-Accelerated Canvases */
+    #bg-canvas,
+    #fx-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    #fx-canvas {
+      z-index: 20;
+    }
+
+    /* ==========================================================================
+       3. TOP HUD BAR (Audio Toggle & Status)
+       ========================================================================== */
+    .hud-bar {
+      position: fixed;
+      top: max(14px, env(safe-area-inset-top));
+      right: max(14px, env(safe-area-inset-right));
+      z-index: 30;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .hud-btn {
+      background: rgba(255, 255, 255, 0.22);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid var(--glass-border);
+      border-radius: 50px;
+      padding: 7px 14px;
+      color: var(--text-white);
+      font-size: 0.82rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
+      transition: transform 0.2s var(--ease-smooth), background 0.2s;
+    }
+
+    .hud-btn:active {
+      transform: scale(0.95);
+    }
+
+    /* ==========================================================================
+       4. MAIN RESPONSIVE CONTAINER & CARD
+       ========================================================================== */
+    .viewport-wrapper {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      max-width: 460px;
+      margin: auto;
+      perspective: 1200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .glass-card {
+      position: relative;
+      width: 100%;
+      background: var(--glass-surface);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+      border: 1.5px solid var(--glass-border);
+      border-radius: clamp(24px, 6vw, 36px);
+      padding: clamp(26px, 6.5vh, 44px) clamp(20px, 5.5vw, 32px);
+      box-shadow: var(--glass-shadow);
+      text-align: center;
+      transform-style: preserve-3d;
+      will-change: transform, opacity;
+      transition: opacity 0.8s var(--ease-smooth), transform 0.8s var(--ease-smooth);
+    }
+
+    .glass-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 10%;
+      width: 80%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.7), transparent);
+    }
+
+    /* ==========================================================================
+       5. SCREEN 1: WELCOME SCREEN
+       ========================================================================== */
+    .screen-welcome {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    .screen-welcome.is-exiting {
+      opacity: 0;
+      transform: translateY(-20px) scale(0.94);
+      pointer-events: none;
+    }
+
+    .badge-capsule {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.22);
+      border: 1px solid var(--glass-border-subtle);
+      border-radius: 30px;
+      padding: 5px 14px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      margin-bottom: clamp(14px, 3vh, 22px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      animation: pulseSubtle 3s infinite ease-in-out;
+    }
+
+    @keyframes pulseSubtle {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    .card-title {
+      font-family: var(--font-display);
+      font-size: clamp(1.85rem, 6.5vw, 2.5rem);
+      line-height: 1.22;
+      color: #ffffff;
+      text-shadow: 0 3px 14px rgba(97, 23, 73, 0.35);
+      margin-bottom: 10px;
+    }
+
+    .card-subtitle {
+      font-size: clamp(0.9rem, 3.4vw, 1.0rem);
+      line-height: 1.5;
+      color: var(--text-dim);
+      margin-bottom: clamp(20px, 4vh, 28px);
+      font-weight: 400;
+      padding: 0 4px;
+    }
+
+    .input-group {
+      position: relative;
+      margin-bottom: 12px;
+      width: 100%;
+    }
+
+    /* 16px font size to prevent iOS Safari auto-zoom on iPhone 13 */
+    .elegant-input {
+      width: 100%;
+      padding: 16px 20px;
+      font-size: 16px;
+      font-family: inherit;
+      color: var(--text-dark);
+      background: rgba(255, 255, 255, 0.94);
+      border: 2px solid transparent;
+      border-radius: 18px;
+      outline: none;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+      transition: all 0.25s var(--ease-smooth);
+      -webkit-appearance: none;
+    }
+
+    .elegant-input::placeholder {
+      color: #9a658f;
+      font-weight: 400;
+    }
+
+    .elegant-input:focus {
+      border-color: var(--accent-rose);
+      background: #ffffff;
+      box-shadow: 0 10px 28px var(--glow-rose);
+      transform: translateY(-2px);
+    }
+
+    .feedback-chip {
+      display: inline-block;
+      font-size: 0.85rem;
+      color: #ffe6ee;
+      background: rgba(216, 27, 96, 0.72);
+      backdrop-filter: blur(6px);
+      padding: 6px 14px;
+      border-radius: 20px;
+      margin-bottom: 12px;
+      opacity: 0;
+      transform: translateY(-8px);
+      transition: opacity 0.3s var(--ease-smooth), transform 0.3s var(--ease-smooth);
+      pointer-events: none;
+    }
+
+    .feedback-chip.is-active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .btn-lux {
+      width: 100%;
+      padding: 16px 26px;
+      border: none;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #ff4370 0%, #e02868 60%, #c41854 100%);
+      color: #ffffff;
+      font-size: 1.08rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      box-shadow: 0 10px 28px var(--glow-rose);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: transform 0.2s var(--ease-bounce), box-shadow 0.2s;
+    }
+
+    .btn-lux:active {
+      transform: scale(0.97);
+    }
+
+    @media (hover: hover) {
+      .btn-lux:hover {
+        transform: translateY(-2px) scale(1.02);
+        box-shadow: 0 14px 32px rgba(255, 67, 112, 0.6);
+      }
+    }
+
+    /* ==========================================================================
+       6. SCREEN 2: PHOTO FRAME & REVELATION
+       ========================================================================== */
+    .screen-revelation {
+      display: none;
+      opacity: 0;
+      transform: translateY(24px) scale(0.97);
+      transition: opacity 1.0s var(--ease-smooth), transform 1.0s var(--ease-smooth);
+    }
+
+    .screen-revelation.is-active {
+      display: block;
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    /* Responsive Polaroid Photo Frame */
+    .photo-frame-wrapper {
+      position: relative;
+      display: inline-block;
+      margin: 4px auto clamp(12px, 2.5vh, 18px);
+      perspective: 800px;
+    }
+
+    .photo-frame {
+      position: relative;
+      width: clamp(140px, 42vw, 175px);
+      height: clamp(175px, 50vw, 215px);
+      background: #ffffff;
+      border-radius: 18px;
+      padding: 8px 8px 32px 8px;
+      box-shadow: 0 18px 40px rgba(45, 9, 41, 0.42), 0 0 0 1.5px rgba(255, 255, 255, 0.7);
+      transform: rotate(-3deg);
+      will-change: transform;
+      transition: transform 0.45s var(--ease-bounce), box-shadow 0.35s;
+      cursor: pointer;
+    }
+
+    .photo-frame:active {
+      transform: rotate(0deg) scale(1.03);
+    }
+
+    @media (hover: hover) {
+      .photo-frame:hover {
+        transform: rotate(0deg) scale(1.05) translateY(-3px);
+        box-shadow: 0 24px 50px rgba(45, 9, 41, 0.5), 0 0 22px var(--glow-gold);
+      }
+    }
+
+    .frame-pin {
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 24px;
+      height: 24px;
+      background: radial-gradient(circle at 35% 35%, #ffe6a7, #d4a373);
+      border-radius: 50%;
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.25), inset 0 2px 3px rgba(255, 255, 255, 0.6);
+      z-index: 5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+    }
+
+    .photo-viewport {
+      width: 100%;
+      height: 100%;
+      border-radius: 12px;
+      overflow: hidden;
+      background: linear-gradient(135deg, #ffd1dc 0%, #f7b2c7 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .photo-viewport img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+      transition: transform 0.5s var(--ease-smooth);
+    }
+
+    .photo-frame:hover .photo-viewport img {
+      transform: scale(1.08);
+    }
+
+    .frame-caption {
+      position: absolute;
+      bottom: 7px;
+      left: 0;
+      width: 100%;
+      text-align: center;
+      font-family: var(--font-display);
+      font-size: 0.88rem;
+      color: #632049;
+      font-weight: 600;
+      pointer-events: none;
+    }
+
+    .change-photo-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.74rem;
+      color: rgba(255, 255, 255, 0.9);
+      background: rgba(255, 255, 255, 0.18);
+      border: 1px dashed rgba(255, 255, 255, 0.45);
+      padding: 4px 12px;
+      border-radius: 12px;
+      cursor: pointer;
+      margin-top: -8px;
+      margin-bottom: clamp(10px, 2vh, 16px);
+      transition: background 0.2s;
+    }
+
+    .change-photo-badge:active {
+      background: rgba(255, 255, 255, 0.35);
+    }
+
+    #file-photo-input {
+      display: none;
+    }
+
+    /* Heading Slot */
+    .heading-slot {
+      min-height: 2.5em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 8px;
+    }
+
+    .typed-heading {
+      font-family: var(--font-display);
+      font-size: clamp(1.9rem, 6.8vw, 2.8rem);
+      line-height: 1.25;
+      color: #ffffff;
+      text-shadow: 0 4px 16px rgba(78, 12, 53, 0.5);
+      word-break: break-word;
+    }
+
+    .soft-cursor {
+      display: inline-block;
+      width: 3px;
+      height: 1.15em;
+      vertical-align: middle;
+      background: #ffffff;
+      margin-left: 4px;
+      border-radius: 2px;
+      box-shadow: 0 0 10px #ffffff;
+      animation: blink 0.85s infinite;
+    }
+
+    @keyframes blink {
+      0%, 49% { opacity: 1; }
+      50%, 100% { opacity: 0; }
+    }
+
+    .soft-cursor.hide {
+      display: none;
+    }
+
+    /* Sweet message container */
+    .message-box {
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      border-radius: 20px;
+      padding: clamp(14px, 2.5vh, 18px) clamp(14px, 4vw, 20px);
+      margin: 8px 0 clamp(16px, 3vh, 22px);
+      opacity: 0;
+      transform: translateY(14px);
+      will-change: transform, opacity;
+      transition: opacity 1s var(--ease-smooth), transform 1s var(--ease-smooth);
+    }
+
+    .message-box.reveal {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .sweet-line {
+      font-size: clamp(0.96rem, 3.6vw, 1.14rem);
+      line-height: 1.6;
+      color: var(--text-cream);
+      text-shadow: 0 2px 8px rgba(50, 10, 36, 0.3);
+      font-weight: 400;
+    }
+
+    /* Revelation Actions */
+    .revelation-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 0.8s var(--ease-smooth), transform 0.8s var(--ease-smooth);
+    }
+
+    .revelation-actions.reveal {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .btn-hug {
+      background: rgba(255, 255, 255, 0.28);
+      border: 1px solid var(--glass-border);
+      border-radius: 50px;
+      padding: 12px 26px;
+      color: #ffffff;
+      font-size: 0.96rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+      transition: transform 0.2s var(--ease-bounce), background 0.2s;
+    }
+
+    .btn-hug:active {
+      transform: scale(0.94);
+    }
+
+    .btn-replay-text {
+      color: rgba(255, 255, 255, 0.78);
+      font-size: 0.82rem;
+      text-decoration: none;
+      cursor: pointer;
+      padding: 4px 8px;
+    }
+
+    /* ==========================================================================
+       7. ACCESSIBILITY
+       ========================================================================== */
+    @media (prefers-reduced-motion: reduce) {
+      *, ::before, ::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+      .soft-cursor {
+        display: none !important;
+      }
+      .photo-frame {
+        transform: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Ambient Background Glows -->
+  <div class="ambient-glow one" aria-hidden="true"></div>
+  <div class="ambient-glow two" aria-hidden="true"></div>
+
+  <!-- Hardware-Accelerated 60FPS Canvases -->
+  <canvas id="bg-canvas"></canvas>
+  <canvas id="fx-canvas"></canvas>
+
+  <!-- Top HUD: Music Switch -->
+  <aside class="hud-bar">
+    <button id="audio-toggle" class="hud-btn" aria-label="Toggle music">
+      <span id="audio-icon" aria-hidden="true">🎵</span>
+      <span id="audio-label">Music Off</span>
+    </button>
+  </aside>
+
+  <!-- Responsive Perspective Wrapper -->
+  <main class="viewport-wrapper">
+    <div id="interactive-card" class="glass-card">
+
+      <!-- ====================================================================
+           SCREEN 1: WELCOME SCREEN
+           ==================================================================== -->
+      <section id="screen-welcome" class="screen-welcome" aria-label="Welcome screen">
+        <div class="badge-capsule">
+          <span aria-hidden="true">✨</span>
+          <span>A Loving Surprise For Rahma Shah</span>
+        </div>
+
+        <h1 class="card-title">A special surprise for you Janum </h1>
+        <p class="card-subtitle">Every sweet memory deserves a smile. Tell me who this is for 💕</p>
+
+        <form id="greeting-form" onsubmit="event.preventDefault(); initiateTransition();" novalidate>
+          <div class="input-group">
+            <input 
+              type="text" 
+              id="sister-name-input" 
+              class="elegant-input" 
+              placeholder="Enter your name" 
+              autocomplete="off" 
+              autofocus 
+              maxlength="30"
+              aria-label="Enter your name"
+            />
+          </div>
+
+          <div id="error-chip" class="feedback-chip" role="alert" aria-live="polite">
+            Please enter your lovely name first Janu 💕
+          </div>
+
+          <button type="submit" id="enter-trigger" class="btn-lux" aria-label="Open surprise">
+            <span>Open Surprise</span>
+            <span aria-hidden="true">💌</span>
+          </button>
+        </form>
+      </section>
+
+      <!-- ====================================================================
+           SCREEN 2: PHOTO FRAME & LOVE CELEBRATION
+           ==================================================================== -->
+      <section id="screen-revelation" class="screen-revelation" aria-label="Sister love note">
+        
+        <!-- Polaroid Frame with Rahma's Photo -->
+        <div class="photo-frame-wrapper">
+          <div class="photo-frame" id="photo-frame-element" title="Tap to change photo">
+            <div class="frame-pin">⭐</div>
+            <div class="photo-viewport">
+              <!-- RAHMA'S PHOTO INSERTED HERE -->
+              <img 
+                id="sister-photo" 
+                src="RAHMA IMG .jpeg" 
+                onerror="this.onerror=null; this.src='rahma.jpeg';" 
+                alt="Rahma's portrait" 
+              />
+            </div>
+            <div class="frame-caption">Lovely Rahma Beta  💖</div>
+          </div>
+        </div>
+
+        <!-- 1-Touch Photo Switcher -->
+        <div>
+          <label for="file-photo-input" class="change-photo-badge" title="Upload a photo from your iPhone or laptop">
+            <span>📷</span>
+            <span>Change Photo</span>
+          </label>
+          <input type="file" id="file-photo-input" accept="image/*">
+        </div>
+
+        <!-- Dynamic Typing Heading -->
+        <div class="heading-slot">
+          <h1 class="typed-heading">
+            <span id="text-target"></span><span id="text-cursor" class="soft-cursor" aria-hidden="true"></span>
+          </h1>
+        </div>
+
+        <!-- Sweet message container -->
+        <div id="message-container" class="message-box">
+          <p class="sweet-line">
+            You are my lovely sister Rahma Shah.Mer Beti  Now sleep well, sweet dreams 😴💕
+          </p>
+        </div>
+
+        <!-- Interactive Actions -->
+        <div id="actions-bar" class="revelation-actions">
+          <button id="hug-btn" class="btn-hug" aria-label="Send a warm hug">
+            <span>Send a Warm Hug</span>
+            <span aria-hidden="true">🤗💗</span>
+          </button>
+          <a href="#" id="restart-btn" class="btn-replay-text">← Experience Again</a>
+        </div>
+
+      </section>
+    </div>
+  </main>
+
+  <!-- ==========================================================================
+       JAVASCRIPT: IPHONE 13 & LAPTOP ADAPTIVE LOGIC
+       ========================================================================== -->
+  <script>
+    (function () {
+      'use strict';
+
+      const CONFIG = {
+        maxBackgroundHearts: 22,
+        confettiCount: 80,
+        typingSpeedMs: 70,
+        cardTiltMaxDeg: 5
+      };
+
+      const card = document.getElementById('interactive-card');
+      const screenWelcome = document.getElementById('screen-welcome');
+      const screenRevelation = document.getElementById('screen-revelation');
+      const nameInput = document.getElementById('sister-name-input');
+      const errorChip = document.getElementById('error-chip');
+      const textTarget = document.getElementById('text-target');
+      const textCursor = document.getElementById('text-cursor');
+      const messageContainer = document.getElementById('message-container');
+      const actionsBar = document.getElementById('actions-bar');
+      const hugBtn = document.getElementById('hug-btn');
+      const restartBtn = document.getElementById('restart-btn');
+      const sisterPhoto = document.getElementById('sister-photo');
+      const filePhotoInput = document.getElementById('file-photo-input');
+      const photoFrame = document.getElementById('photo-frame-element');
+
+      const bgCanvas = document.getElementById('bg-canvas');
+      const bgCtx = bgCanvas.getContext('2d');
+      const fxCanvas = document.getElementById('fx-canvas');
+      const fxCtx = fxCanvas.getContext('2d');
+
+      const audioToggle = document.getElementById('audio-toggle');
+      const audioIcon = document.getElementById('audio-icon');
+      const audioLabel = document.getElementById('audio-label');
+
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      /* ------------------------------------------------------------------------
+         1. AUDIO ENGINE (iOS Safari Friendly)
+         ------------------------------------------------------------------------ */
+      let audioCtx = null;
+      let isMusicPlaying = false;
+      let musicInterval = null;
+
+      function initAudio() {
+        if (!audioCtx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          audioCtx = new AudioContext();
+        }
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+      }
+
+      // Pre-unlock audio on first touch gesture on iPhone
+      window.addEventListener('touchstart', function unlockAudioOnFirstTouch() {
+        initAudio();
+        window.removeEventListener('touchstart', unlockAudioOnFirstTouch);
+      }, { passive: true });
+
+      function playChime(freq, duration = 1.4, gainLevel = 0.08) {
+        if (!audioCtx) return;
+        try {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+          gain.gain.setValueAtTime(0, audioCtx.currentTime);
+          gain.gain.linearRampToValueAtTime(gainLevel, audioCtx.currentTime + 0.08);
+          gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+
+          osc.start();
+          osc.stop(audioCtx.currentTime + duration);
+        } catch (e) {}
+      }
+
+      function playDreamArpeggio() {
+        const notes = [523.25, 659.25, 783.99, 880.00, 987.77, 1046.50];
+        let delay = 0;
+        for (let i = 0; i < 4; i++) {
+          const note = notes[Math.floor(Math.random() * notes.length)];
+          setTimeout(() => playChime(note, 2.0, 0.05), delay);
+          delay += 240;
+        }
+      }
+
+      audioToggle.addEventListener('click', () => {
+        initAudio();
+        isMusicPlaying = !isMusicPlaying;
+        if (isMusicPlaying) {
+          audioIcon.textContent = '💖';
+          audioLabel.textContent = 'Music On';
+          playDreamArpeggio();
+          musicInterval = setInterval(playDreamArpeggio, 3200);
+        } else {
+          audioIcon.textContent = '🎵';
+          audioLabel.textContent = 'Music Off';
+          clearInterval(musicInterval);
+        }
+      });
+
+      /* ------------------------------------------------------------------------
+         2. CANVASES & IPHONE DPR SCALING
+         ------------------------------------------------------------------------ */
+      let width = window.innerWidth;
+      let height = window.innerHeight;
+
+      function handleResize() {
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        width = window.innerWidth;
+        height = window.innerHeight;
+
+        bgCanvas.width = width * dpr;
+        bgCanvas.height = height * dpr;
+        bgCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+        fxCanvas.width = width * dpr;
+        fxCanvas.height = height * dpr;
+        fxCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+      window.addEventListener('resize', handleResize, { passive: true });
+      window.addEventListener('orientationchange', () => setTimeout(handleResize, 150));
+      handleResize();
+
+      /* ------------------------------------------------------------------------
+         3. FLOATING HEARTS (60 FPS)
+         ------------------------------------------------------------------------ */
+      const heartsPool = [];
+
+      class AmbientHeart {
+        constructor() {
+          this.reset(true);
+        }
+
+        reset(initial = false) {
+          this.x = Math.random() * width;
+          this.y = initial ? Math.random() * height : height + 35;
+          this.size = Math.random() * 14 + 10;
+          this.speedY = Math.random() * 0.7 + 0.35;
+          this.speedX = (Math.random() - 0.5) * 0.4;
+          this.opacity = Math.random() * 0.45 + 0.2;
+          this.rotation = (Math.random() - 0.5) * 0.5;
+          this.rotSpeed = (Math.random() - 0.5) * 0.012;
+          this.wobble = Math.random() * Math.PI * 2;
+          this.wobbleSpeed = Math.random() * 0.02 + 0.01;
+          
+          const hues = [345, 330, 280, 260, 10];
+          this.hue = hues[Math.floor(Math.random() * hues.length)];
+        }
+
+        update() {
+          this.y -= this.speedY;
+          this.wobble += this.wobbleSpeed;
+          this.x += Math.sin(this.wobble) * 0.55 + this.speedX;
+          this.rotation += this.rotSpeed;
+
+          if (this.y < -50 || this.x < -50 || this.x > width + 50) {
+            this.reset(false);
+          }
+        }
+
+        draw(ctx) {
+          ctx.save();
+          ctx.translate(this.x, this.y);
+          ctx.rotate(this.rotation);
+          ctx.globalAlpha = this.opacity;
+          ctx.fillStyle = `hsl(${this.hue}, 90%, 75%)`;
+
+          renderHeartShape(ctx, 0, 0, this.size);
+          ctx.fill();
+          ctx.restore();
+        }
+      }
+
+      function renderHeartShape(ctx, x, y, size) {
+        const topH = size * 0.3;
+        ctx.beginPath();
+        ctx.moveTo(x, y + topH);
+        ctx.bezierCurveTo(x, y, x - size / 2, y, x - size / 2, y + topH);
+        ctx.bezierCurveTo(x - size / 2, y + (size + topH) / 2, x, y + (size + topH) / 1.3, x, y + size);
+        ctx.bezierCurveTo(x, y + (size + topH) / 1.3, x + size / 2, y + (size + topH) / 2, x + size / 2, y + topH);
+        ctx.bezierCurveTo(x + size / 2, y, x, y, x, y + topH);
+        ctx.closePath();
+      }
+
+      for (let i = 0; i < CONFIG.maxBackgroundHearts; i++) {
+        heartsPool.push(new AmbientHeart());
+      }
+
+      function loopBackground() {
+        bgCtx.clearRect(0, 0, width, height);
+        if (!prefersReducedMotion) {
+          for (let i = 0; i < heartsPool.length; i++) {
+            heartsPool[i].update();
+            heartsPool[i].draw(bgCtx);
+          }
+        }
+        requestAnimationFrame(loopBackground);
+      }
+      requestAnimationFrame(loopBackground);
+
+      /* ------------------------------------------------------------------------
+         4. BURST & CONFETTI SYSTEM
+         ------------------------------------------------------------------------ */
+      let activeBurst = [];
+      let isBurstRendering = false;
+
+      class ParticleBurst {
+        constructor(x, y) {
+          this.x = x;
+          this.y = y;
+          const angle = Math.random() * Math.PI * 2;
+          const speed = Math.random() * 10 + 4;
+          this.vx = Math.cos(angle) * speed;
+          this.vy = Math.sin(angle) * speed - 2.5;
+          this.gravity = 0.22;
+          this.friction = 0.955;
+          this.alpha = 1;
+          this.decay = Math.random() * 0.015 + 0.009;
+          this.size = Math.random() * 12 + 7;
+          this.rotation = Math.random() * Math.PI * 2;
+          this.rotSpeed = (Math.random() - 0.5) * 0.16;
+
+          this.shapeType = Math.floor(Math.random() * 3);
+          const colors = ['#ff4370', '#ff8da1', '#ffd166', '#a29bfe', '#ffffff', '#fd79a8', '#ffeaa7'];
+          this.color = colors[Math.floor(Math.random() * colors.length)];
+        }
+
+        update() {
+          this.vx *= this.friction;
+          this.vy = this.vy * this.friction + this.gravity;
+          this.x += this.vx;
+          this.y += this.vy;
+          this.rotation += this.rotSpeed;
+          this.alpha -= this.decay;
+        }
+
+        draw(ctx) {
+          if (this.alpha <= 0) return;
+          ctx.save();
+          ctx.translate(this.x, this.y);
+          ctx.rotate(this.rotation);
+          ctx.globalAlpha = Math.max(this.alpha, 0);
+          ctx.fillStyle = this.color;
+
+          if (this.shapeType === 0) {
+            renderHeartShape(ctx, 0, -this.size / 2, this.size);
+            ctx.fill();
+          } else if (this.shapeType === 1) {
+            ctx.beginPath();
+            ctx.arc(0, 0, this.size * 0.35, 0, Math.PI * 2);
+            ctx.fill();
+          } else {
+            ctx.fillRect(-this.size / 2, -this.size / 3, this.size, this.size * 0.65);
+          }
+          ctx.restore();
+        }
+      }
+
+      function launchCelebration(count = CONFIG.confettiCount) {
+        if (prefersReducedMotion) return;
+
+        const originX = width / 2;
+        const originY = height / 2;
+
+        for (let i = 0; i < count; i++) {
+          activeBurst.push(new ParticleBurst(originX, originY));
+        }
+
+        if (!isBurstRendering) {
+          isBurstRendering = true;
+          requestAnimationFrame(renderBurstLoop);
+        }
+      }
+
+      function renderBurstLoop() {
+        fxCtx.clearRect(0, 0, width, height);
+        let hasAlive = false;
+
+        for (let i = activeBurst.length - 1; i >= 0; i--) {
+          const p = activeBurst[i];
+          p.update();
+          p.draw(fxCtx);
+          if (p.alpha > 0) {
+            hasAlive = true;
+          } else {
+            activeBurst.splice(i, 1);
+          }
+        }
+
+        if (hasAlive && activeBurst.length > 0) {
+          requestAnimationFrame(renderBurstLoop);
+        } else {
+          isBurstRendering = false;
+          fxCtx.clearRect(0, 0, width, height);
+        }
+      }
+
+      /* ------------------------------------------------------------------------
+         5. TYPING EFFECT
+         ------------------------------------------------------------------------ */
+      let typeTimer = null;
+
+      function typeWriter(text, onComplete) {
+        textTarget.textContent = '';
+        textCursor.classList.remove('hide');
+
+        if (prefersReducedMotion) {
+          textTarget.textContent = text;
+          textCursor.classList.add('hide');
+          if (onComplete) onComplete();
+          return;
+        }
+
+        let i = 0;
+        function step() {
+          if (i < text.length) {
+            textTarget.textContent += text.charAt(i);
+            i++;
+            const speed = CONFIG.typingSpeedMs + (Math.random() * 20 - 10);
+            typeTimer = setTimeout(step, speed);
+          } else {
+            textCursor.classList.add('hide');
+            if (onComplete) onComplete();
+          }
+        }
+
+        typeTimer = setTimeout(step, 350);
+      }
+
+      /* ------------------------------------------------------------------------
+         6. SCREEN TRANSITION LOGIC
+         ------------------------------------------------------------------------ */
+      window.initiateTransition = function () {
+        const rawName = nameInput.value.trim();
+
+        if (!rawName) {
+          showError("Please enter your lovely name first 💕");
+          nameInput.focus();
+          return;
+        }
+
+        const formattedName = rawName
+          .split(' ')
+          .map(part => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+          .join(' ');
+
+        hideError();
+        initAudio();
+        if (isMusicPlaying) playDreamArpeggio();
+
+        screenWelcome.classList.add('is-exiting');
+
+        setTimeout(() => {
+          screenWelcome.style.display = 'none';
+          screenRevelation.classList.add('is-active');
+
+          launchCelebration();
+
+          const finalHeading = `I Love You, ${formattedName}`;
+          typeWriter(finalHeading, () => {
+            setTimeout(() => {
+              messageContainer.classList.add('reveal');
+            }, 250);
+
+            setTimeout(() => {
+              actionsBar.classList.add('reveal');
+            }, 800);
+          });
+
+        }, 750);
+      };
+
+      function showError(msg) {
+        errorChip.textContent = msg;
+        errorChip.classList.add('is-active');
+      }
+
+      function hideError() {
+        errorChip.classList.remove('is-active');
+      }
+
+      nameInput.addEventListener('input', () => {
+        if (nameInput.value.trim()) hideError();
+      });
+
+      /* ------------------------------------------------------------------------
+         7. PHOTO CUSTOMIZER (Instant on iPhone Camera/Gallery or Laptop)
+         ------------------------------------------------------------------------ */
+      photoFrame.addEventListener('click', () => filePhotoInput.click());
+
+      filePhotoInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function (event) {
+            sisterPhoto.src = event.target.result;
+            launchCelebration(35);
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+
+      /* ------------------------------------------------------------------------
+         8. HUG & REPLAY
+         ------------------------------------------------------------------------ */
+      hugBtn.addEventListener('click', () => {
+        launchCelebration(55);
+        initAudio();
+        playChime(880.0, 1.8, 0.1);
+        playChime(1046.5, 2.2, 0.08);
+
+        photoFrame.style.transform = 'scale(1.1) rotate(2deg)';
+        setTimeout(() => {
+          photoFrame.style.transform = '';
+        }, 550);
+      });
+
+      restartBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        clearTimeout(typeTimer);
+
+        messageContainer.classList.remove('reveal');
+        actionsBar.classList.remove('reveal');
+        textTarget.textContent = '';
+        screenRevelation.classList.remove('is-active');
+
+        setTimeout(() => {
+          screenRevelation.style.display = 'none';
+          screenWelcome.style.display = 'block';
+          void screenWelcome.offsetWidth;
+          screenWelcome.classList.remove('is-exiting');
+          nameInput.value = '';
+          nameInput.focus();
+        }, 400);
+      });
+
+      /* ------------------------------------------------------------------------
+         9. 3D TILT (Desktop Mouse & Touch Sensor Aware)
+         ------------------------------------------------------------------------ */
+      if (!prefersReducedMotion && window.matchMedia('(pointer: fine)').matches) {
+        document.addEventListener('mousemove', (e) => {
+          const { innerWidth, innerHeight } = window;
+          const x = (e.clientX / innerWidth - 0.5) * 2;
+          const y = (e.clientY / innerHeight - 0.5) * 2;
+          const rotX = -y * CONFIG.cardTiltMaxDeg;
+          const rotY = x * CONFIG.cardTiltMaxDeg;
+
+          card.style.transform = `rotateX(${rotX.toFixed(2)}deg) rotateY(${rotY.toFixed(2)}deg)`;
+        }, { passive: true });
+
+        document.addEventListener('mouseleave', () => {
+          card.style.transform = 'rotateX(0deg) rotateY(0deg)';
+        });
+      }
+
+    })();
+  </script>
+</body>
+</html>
